@@ -10,8 +10,8 @@ without code changes.
 
 Both the Mavlink telemetry stream, and the pulse stream must be active before starting this tool.
 
-    - See: `simulator_instructions.md` for details about how to start the simulator Mavlink stream.
-    - See: the `pulse_server` subdirectory for details about how to start the pulse server stream.
+ - See: `simulator_instructions.md` for details about how to start the simulator Mavlink stream.
+ - See: the `pulse_server` subdirectory for details about how to start the pulse server stream.
 
 Once the `telemetry_host` has been started, the following functionality is supported:
 
