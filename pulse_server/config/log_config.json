@@ -1,0 +1,37 @@
+{
+    "refresh_rate": "30 seconds",
+
+    "appenders": {
+        "stdout": { "kind": "console" },
+
+        "web_server": {
+            "kind": "file",
+            "path": "log/web_server.log"
+        },
+
+        "hackrf_log": {
+            "kind": "file",
+            "path": "log/hackrf.log"
+        }
+    },
+
+    "root": {
+        "level": "warn",
+        "appenders": ["stdout"]
+    },
+
+    "loggers": {
+        "web_server": {
+            "level": "info",
+            "appenders": ["web_server"]
+        },
+        "hackrf_task": {
+            "level": "info",
+            "appenders": ["hackrf_log"]
+        },
+        "pulse_manager": {
+            "level": "info",
+            "appenders": ["hackrf_log"]
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+  "hackrf_config": {
+    "samp_rate": 2000000,
+    "center_freq": 150000000,
+    "auto_gain": true,
+    "lna_gain": 0,
+    "vga_gain": 0,
+    "amp_enable": false,
+    "antenna_enable": false,
+    "baseband_filter": null,
+    "raw_log": null
+  },
+  "pulse_targets": [
+    {
+      "freq": 150130000.0,
+      "duration": 0.0185,
+      "duration_variance": 0.0002,
+      "threshold": 0.0005,
+      "edge_length": 10,
+      "peak_lookahead": 5
+    },
+    {
+      "freq": 149062000.0,
+      "duration": 0.019,
+      "duration_variance": 0.0002,
+      "threshold": 0.0005,
+      "edge_length": 10,
+      "peak_lookahead": 5
+    },
+    {
+      "freq": 152048000.0,
+      "duration": 0.0115,
+      "duration_variance": 0.0005,
+      "threshold": 0.0005,
+      "edge_length": 10,
+      "peak_lookahead": 5
+    }
+  ]
+}

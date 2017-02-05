@@ -1,0 +1,17 @@
+[package]
+name = "pulse_server"
+version = "0.1.0"
+authors = ["Michael Chesser"]
+
+[dependencies]
+byteorder = "0.5"
+log = "0.3"
+log4rs = { version = "0.5", features = ["json_format"] }
+mio = "0.6"
+serde = "0.8"
+serde_derive = "0.8"
+serde_json = "0.8"
+
+hackrf = { git = "https://github.com/mchesser/rust-hackrf" }
+common = { git = "https://github.com/mchesser/trackerbots_core" }
+animal_detector = { git = "https://github.com/mchesser/trackerbots_core" }
