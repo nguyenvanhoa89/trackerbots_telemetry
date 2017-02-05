@@ -4,10 +4,14 @@ version = "0.1.0"
 authors = ["Michael Chesser"]
 
 [dependencies]
-lazy_static = "*"
+byteorder = "1"
+lazy_static = "0.2"
 mavlink = "0.4"
 rocket = "0.1.6"
 rocket_codegen = "0.1.6"
 rocket_contrib = "0.1.6"
 serde = "0.8"
 serde_derive = "0.8"
+serde_json = "0.8"
+
+common = { git = "https://github.com/mchesser/trackerbots_core" }

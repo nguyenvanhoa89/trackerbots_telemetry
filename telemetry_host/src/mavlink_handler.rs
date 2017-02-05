@@ -6,6 +6,19 @@ use std::sync::atomic::{ATOMIC_BOOL_INIT, AtomicBool, Ordering};
 use mavlink;
 use mavlink::common::*;
 
+#[derive(Debug, Clone, Serialize)]
+pub struct Telemetry {
+    pub position: [f32; 3],
+    pub heading: f32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Location {
+    pub x: f32,
+    pub y: f32,
+    pub alt: f32
+}
+
 #[derive(Copy, Clone, Default)]
 pub struct SharedData {
     pub position: [f32; 3],
@@ -15,7 +28,20 @@ pub struct SharedData {
 }
 
 lazy_static! {
-    pub static ref SHARED_DATA: Mutex<SharedData> = Mutex::new(SharedData::default());
+    static ref MAVLINK_DATA: Mutex<SharedData> = Mutex::new(SharedData::default());
+}
+
+pub fn get_telemetry() -> Telemetry {
+    let mavlink_data = MAVLINK_DATA.lock().unwrap();
+
+    Telemetry {
+        position: mavlink_data.position,
+        heading: mavlink_data.heading,
+    }
+}
+
+pub fn do_reposition(target: Location) {
+    MAVLINK_DATA.lock().unwrap().next_target = Some([target.x, target.y, target.alt]);
 }
 
 static STOPPED: AtomicBool = ATOMIC_BOOL_INIT;
@@ -31,7 +57,7 @@ impl Drop for MavlinkHandle {
 impl MavlinkHandle {
     pub fn new() -> MavlinkHandle {
         STOPPED.store(false, Ordering::Relaxed);
-        *SHARED_DATA.lock().unwrap() = SharedData::default();
+        *MAVLINK_DATA.lock().unwrap() = SharedData::default();
         thread::spawn(|| mavlink_background_process());
         MavlinkHandle { }
     }
@@ -78,9 +104,8 @@ struct Coordinate {
 }
 
 fn mavlink_background_process() {
-    println!("Attempting to connect to Mavlink (udp:127.0.0.1:14550)");
-
-    let connection = mavlink::connect("udpin:127.0.0.1:14550").unwrap();
+    let connection = mavlink::connect("udpin:127.0.0.1:14552")
+        .expect("Failed to connect to Mavlink stream");
 
     let mut gps_base = GpsBase::default();
     while STOPPED.load(Ordering::Relaxed) == false {
@@ -109,14 +134,14 @@ fn handle_gps_data(gps_base: &mut GpsBase, data: GLOBAL_POSITION_INT_DATA) -> Op
     let new_position = [dx, dy, alt_meters];
     let velocity = [data.vx as f32 / 100.0, data.vy as f32 / 100.0, data.vz as f32 / 100.0];
 
-    let mut shared_data_lock = SHARED_DATA.lock().unwrap();
-    shared_data_lock.position = new_position;
-    shared_data_lock.velocity = velocity;
-    shared_data_lock.heading = data.hdg as f32 / 100.0;
-    // shared_data_lock.orientation = orientation;
+    let mut mavlink_data_lock = MAVLINK_DATA.lock().unwrap();
+    mavlink_data_lock.position = new_position;
+    mavlink_data_lock.velocity = velocity;
+    mavlink_data_lock.heading = data.hdg as f32 / 100.0;
+    // mavlink_data_lock.orientation = orientation;
 
-    let target = shared_data_lock.next_target.take();
-    drop(shared_data_lock);
+    let target = mavlink_data_lock.next_target.take();
+    drop(mavlink_data_lock);
 
     if let Some(target) = target {
         println!("Attempting to set new target");
